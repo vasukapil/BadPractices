@@ -14,13 +14,22 @@ function App() {
   const [soldAmount, setSoldAmount] = useState(0);
   const [soldCount, setSoldCount] = useState(0);
   const [apiData, setApiData] = useState([]);
+  const [selectedMonthData, setSelectedMonthData] = useState();
   useEffect(() => {
     fetch(
       "https://roxiler-interviews.s3.amazonaws.com/product_transaction.json"
     )
       .then((response) => response.json())
-      .then((res) => setApiData(res));
-  }, []);
+      .then((res) => {
+        setApiData(res);
+        let filtered = res.filter(
+          (item) =>
+            new Date(item.dateOfSale).getMonth().toString() === selectedMonth
+        );
+        console.log(filtered, "fil..");
+        setSelectedMonthData(filtered);
+      });
+  }, [selectedMonth]);
 
   useEffect(() => {
     setSoldAmount(0);
@@ -77,14 +86,14 @@ function App() {
       </div>
       <div>
         <div>
-          <BarChart />
+          <BarChart data={apiData} />
         </div>
         <div>
           <PieChart />
         </div>
       </div>
       <div>
-        <Table />
+        <Table selectedMonthData={selectedMonthData} />
       </div>
     </div>
   );
